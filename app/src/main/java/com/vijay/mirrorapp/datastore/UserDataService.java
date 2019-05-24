@@ -38,4 +38,9 @@ public class UserDataService implements UserDataAPI {
     public Single<Response> getUserData(String authToken){
        return getUserDataAPI().getUserData(authToken);
     }
+
+    @Override
+    public Single<Response> updateUserData(String authToken, String name, String birthdate, String location){
+        return getUserDataAPI().updateUserData(authToken, name, birthdate, location);
+    }
 }

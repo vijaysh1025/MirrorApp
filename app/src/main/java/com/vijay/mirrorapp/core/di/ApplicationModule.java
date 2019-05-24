@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vijay.mirrorapp.MirrorApplication;
 import com.vijay.mirrorapp.datastore.UserDataService;
+import com.vijay.mirrorapp.viewmodel.UserAccountViewModel;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -41,6 +42,9 @@ public class ApplicationModule {
     }
 
     @Provides @Singleton
+    public UserAccountViewModel provideUserAccountViewModel(){ return  new UserAccountViewModel();}
+
+    @Provides @Singleton
     public Retrofit provideRetrofit(){
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -66,15 +70,6 @@ public class ApplicationModule {
                         .addHeader("Cache-Control", "no-cache")
                         .build();
 
-//                MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-//                RequestBody body = RequestBody.create(mediaType, "email=jdoe%40gmail.com&password=abcdef1234");
-//                Request request = new Request.Builder()
-//                        .url("https://dev.refinemirror.com/api/v1/auth/login/")
-//                        .post(body)
-//                        .addHeader("Content-Type", "application/x-www-form-urlencoded")
-//                        .addHeader("Cache-Control", "no-cache")
-//                        .addHeader("Postman-Token", "06649221-562a-49a0-81ff-10323629401b")
-//                        .build();
 
                 return  chain.proceed(request);
             }

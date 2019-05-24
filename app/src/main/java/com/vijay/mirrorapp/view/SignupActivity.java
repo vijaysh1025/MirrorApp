@@ -66,7 +66,7 @@ public class SignupActivity extends BaseActivity {
             }
         });
 
-        bindUserAcountService();
+        bindUserAcountService(viewModel);
     }
 
     @Override
@@ -200,26 +200,10 @@ public class SignupActivity extends BaseActivity {
         unbindState();
     }
 
-    private void bindUserAcountService(){
-        Intent intent = new Intent("com.vijay.mirrorapp.services.UserAccountService");
-        intent.setPackage("com.vijay.mirrorapp");
-        bindService(intent,viewModel.serviceConnection,0);
-    }
-
-    private void unbindUserAccountService(){
-        try{
-            viewModel.unbindService();
-            unbindService(viewModel.serviceConnection);
-        }catch (Throwable e){
-            Log.w(TAG, "Failed to unbindState from the service");
-        }
-        Log.i(TAG, "Activity destroyed");
-    }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindUserAccountService();
+        unbindUserAccountService(viewModel);
     }
 
 }

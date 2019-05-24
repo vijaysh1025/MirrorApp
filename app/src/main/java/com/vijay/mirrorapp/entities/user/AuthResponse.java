@@ -3,20 +3,25 @@ package com.vijay.mirrorapp.entities.user;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class AuthResponse implements Parcelable {
+public class AuthResponse implements Parcelable, ResponseError {
     public String message;
-    public String errorShortCode;
+    public String errorMessage;
     public String authToken;
 
-    public AuthResponse(String message, String errorShortCode, String authToken){
+    public AuthResponse(){
+        this.message="";
+        this.errorMessage="";
+        this.authToken="";
+    }
+    public AuthResponse(String message, String errorMessage, String authToken){
         this.message = message;
-        this.errorShortCode = errorShortCode;
+        this.errorMessage = errorMessage;
         this.authToken = authToken;
     }
 
     protected AuthResponse(Parcel in){
         message = in.readString();
-        errorShortCode = in.readString();
+        errorMessage = in.readString();
         authToken = in.readString();
     }
 
@@ -40,8 +45,18 @@ public class AuthResponse implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i){
         parcel.writeString(message);
-        parcel.writeString(errorShortCode);
+        parcel.writeString(errorMessage);
         parcel.writeString(authToken);
+    }
+
+    @Override
+    public String getErrorMessage(){
+        return errorMessage;
+    }
+
+    @Override
+    public  void setErrorMessage(String message){
+        errorMessage = message;
     }
 
 }

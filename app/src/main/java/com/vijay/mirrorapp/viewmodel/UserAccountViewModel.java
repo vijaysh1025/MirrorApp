@@ -15,26 +15,41 @@ import com.vijay.mirrorapp.entities.user.UserProfile;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
-public class UserAccountViewModel {
+public class UserAccountViewModel implements IServiceProvider{
     private static final String TAG = UserAccountViewModel.class.getSimpleName();
     @Inject
     public UserAccountViewModel(){}
 
+    private AuthResponse EMPTY_AUTH_RESPONSE = new AuthResponse();
+
     private BehaviorSubject<AuthResponse> authResponse = BehaviorSubject.create();
     private BehaviorSubject<UserProfile> userProfile = BehaviorSubject.create();
+    private BehaviorSubject<String> authToken = BehaviorSubject.create();
 
     private IUserAccountApi userApi;
 
     private Handler handler = new Handler(Looper.getMainLooper());
 
-    public BehaviorSubject<AuthResponse> getAuthResponse(){
-        return authResponse;
+    public Observable<AuthResponse> getAuthResponse(){
+        return authResponse
+                .filter(it->it!=EMPTY_AUTH_RESPONSE);
     }
 
     public BehaviorSubject<UserProfile> getUserProfile(){
         return userProfile;
+    }
+
+    public BehaviorSubject<String> getAuthToken() { return authToken; }
+
+    public void setEmptyAuthResponse(){
+        authResponse.onNext(EMPTY_AUTH_RESPONSE);
+    }
+
+    public void setAuthToken(String authToken){
+        this.authToken.onNext(authToken);
     }
 
     public void sendLoginRequest(String email, String password){
@@ -56,6 +71,14 @@ public class UserAccountViewModel {
     public void sendUserProfileRequest(String auth){
         try{
             userApi.getUserProfile(auth);
+        }catch (Throwable t){
+            Log.e(TAG, t.getMessage(),t);
+        }
+    }
+
+    public void sendUserUpdateRequest(String name, String birthday, String location){
+        try{
+            userApi.updateUserProfile(authToken.getValue(), name, birthday, location);
         }catch (Throwable t){
             Log.e(TAG, t.getMessage(),t);
         }
@@ -122,8 +145,13 @@ public class UserAccountViewModel {
     /*
     Remove listener for IPC user account service.
      */
+    @Override
     public void unbindService() throws RemoteException{
         userApi.removeListener(userAccountListener);
     }
 
+    @Override
+    public ServiceConnection getServiceConnection() {
+        return serviceConnection;
+    }
 }

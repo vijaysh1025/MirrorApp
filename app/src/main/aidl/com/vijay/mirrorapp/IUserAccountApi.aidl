@@ -17,4 +17,5 @@ interface IUserAccountApi {
 
     UserProfile getProfile();
     void getUserProfile(String auth);
+    void updateUserProfile(String auth, String name, String birthday, String location);
 }

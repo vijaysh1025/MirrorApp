@@ -52,16 +52,32 @@ public class UserDataRepository {
                 });
     }
 
+    public Single<AuthResponse> updateProfileResponse(String authToken, String name, String birthdate, String location){
+        return  userDataService.updateUserData("Bearer "+authToken, name, birthdate, location)
+                .observeOn(Schedulers.io())
+                .map(new Function<Response, AuthResponse>() {
+                    @Override
+                    public AuthResponse apply(Response response) throws Exception {
+                        return new AuthResponse(response.getMessage(), response.getError_short_code(), "");
+                    }
+                });
+    }
+
     public Single<UserProfile> userProfileResponse(String authToken){
-        return userDataService.getUserData(authToken)
+        return userDataService.getUserData("Bearer "+authToken)
                 .observeOn(Schedulers.io())
                 .map(new Function<Response, UserProfile>() {
                     @Override
                     public UserProfile apply(Response response) throws Exception {
                         String name = response.getData().getName();
-                        String birthdate = response.getData().getProfile().getBirthdate().toString();
+                        String birthdate = "";
                         String email = response.getData().getEmail();
-                        String location = response.getData().getProfile().getLocation().toString();
+                        String location = "";
+                        if(response.getData().getProfile().getBirthdate()!=null)
+                            birthdate = response.getData().getProfile().getBirthdate().toString();
+                        if(response.getData().getProfile().getLocation()!= null)
+                            location = response.getData().getProfile().getLocation().toString();
+
 
                         return new UserProfile(name, email, birthdate,location);
                     }

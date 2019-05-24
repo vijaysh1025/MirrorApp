@@ -6,12 +6,20 @@ import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class UserProfile implements Parcelable {
+public class UserProfile implements Parcelable, ResponseError {
 
     public String name;
     public String email;
     public String birthdate;
     public String location;
+    public String errorMessage;
+
+    public UserProfile(){
+        this.email="";
+        this.name="";
+        this.birthdate="";
+        this.location="";
+    }
 
     public UserProfile(String name, String email, String birthdate, String location){
         this.name = name;
@@ -25,6 +33,7 @@ public class UserProfile implements Parcelable {
         email = in.readString();
         birthdate = in.readString();
         location = in.readString();
+        errorMessage = in.readString();
     }
 
     public static final Creator<UserProfile> CREATOR = new Creator<UserProfile>(){
@@ -51,5 +60,16 @@ public class UserProfile implements Parcelable {
         parcel.writeString(email);
         parcel.writeString(birthdate);
         parcel.writeString(location);
+        parcel.writeString(errorMessage);
+    }
+
+    @Override
+    public String getErrorMessage(){
+        return errorMessage;
+    }
+
+    @Override
+    public  void setErrorMessage(String message){
+        errorMessage = message;
     }
 }

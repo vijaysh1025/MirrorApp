@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import com.vijay.mirrorapp.R;
 import com.vijay.mirrorapp.core.platform.BaseActivity;
-import com.vijay.mirrorapp.datastore.UserDataRepository;
 import com.vijay.mirrorapp.entities.user.AuthResponse;
 import com.vijay.mirrorapp.entities.user.UserProfile;
 import com.vijay.mirrorapp.services.UserAccountService;
@@ -36,9 +35,6 @@ public class LoginActivity extends BaseActivity {
     private static final int REQUEST_SIGNUP = 0;
     @Inject
     UserAccountViewModel viewModel;
-
-    @Inject
-    UserDataRepository userDataRepository;
 
     @BindView(R.id.input_email)
     EditText inputEmail;
@@ -68,6 +64,7 @@ public class LoginActivity extends BaseActivity {
 
         //Start the service
         startUserAcountService();
+        bindUserAcountService(viewModel);
         setUpView();
 
 
@@ -87,25 +84,6 @@ public class LoginActivity extends BaseActivity {
                 boolean isServiceRunning = isServiceRunning(UserAccountService.class);
                 Log.i(TAG, "Is service Running : " + isServiceRunning);
                 login();
-//                userDataRepository.loginResponse(inputEmail.getText().toString(), inputPassword.getText().toString())
-//                        .subscribeOn(Schedulers.io())
-//                        .observeOn(AndroidSchedulers.mainThread())
-//                        .subscribe(new SingleObserver<AuthResponse>() {
-//                            @Override
-//                            public void onSubscribe(Disposable d) {
-//
-//                            }
-//
-//                            @Override
-//                            public void onSuccess(AuthResponse authResponse) {
-//                                Log.i(TAG, "Auth Response : " + authResponse);
-//                            }
-//
-//                            @Override
-//                            public void onError(Throwable e) {
-//                                Log.e(TAG, e.getMessage(),e);
-//                            }
-//                        });
             }
         });
 
@@ -130,26 +108,6 @@ public class LoginActivity extends BaseActivity {
         }
         return false;
     }
-
-    private void startUserAcountService(){
-        Intent intent = new Intent("com.vijay.mirrorapp.services.UserAccountService");
-        intent.setPackage("com.vijay.mirrorapp");
-        startService(intent);
-        bindService(intent,viewModel.serviceConnection,0);
-//        boolean isServiceRunning = isServiceRunning(UserAccountService.class);
-//        Log.i(TAG, "Is service Running : " + isServiceRunning);
-    }
-
-    private void stopUserAccountService(){
-        try{
-            viewModel.unbindService();
-            unbindService(viewModel.serviceConnection);
-        }catch (Throwable e){
-            Log.w(TAG, "Failed to unbindState from the service");
-        }
-        Log.i(TAG, "Activity destroyed");
-    }
-
     private void bindState(){
         compositeDisposable = new CompositeDisposable();
 
@@ -165,17 +123,21 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void onNext(AuthResponse authResponse) {
                     Log.i(TAG, authResponse.message);
-                    //Log.i(TAG, authResponse.errorShortCode);
                     Log.i(TAG,authResponse.authToken);
-                    // On complete call either onLoginSuccess or onLoginFailed
+                    if(authResponse.errorMessage!=null && !authResponse.errorMessage.isEmpty()) {
+                        onLoginFailed();
+                        showErrorMessage(authResponse.errorMessage);
+                        return;
+                    }
                     onLoginSuccess();
                     viewModel.sendUserProfileRequest(authResponse.authToken);
+                    viewModel.setAuthToken(authResponse.authToken);
+                    viewModel.setEmptyAuthResponse();
                 }
 
                 @Override
                 public void onError(Throwable e) {
                     onLoginFailed();
-                    progressDialog.dismiss();
                 }
 
                 @Override
@@ -190,13 +152,29 @@ public class LoginActivity extends BaseActivity {
             .subscribe(new Observer<UserProfile>() {
                 @Override
                 public void onSubscribe(Disposable d) {
-
+                    compositeDisposable.add(d);
                 }
 
                 @Override
                 public void onNext(UserProfile userProfile) {
                     Log.i(TAG, "User Profile : " + userProfile.name);
                     Log.i(TAG, "User Profile : " + userProfile.email);
+                    if(userProfile.errorMessage!=null && !userProfile.errorMessage.isEmpty()) {
+                        onLoginFailed();
+                        showErrorMessage(userProfile.errorMessage);
+                        return;
+                    }
+
+                    Intent intent;
+                    if(userProfile.birthdate == null || userProfile.birthdate.isEmpty() || userProfile.location == null || userProfile.location.isEmpty())
+                        intent = new Intent(getApplicationContext(),EditProfileActivity.class);
+                    else
+                        intent = new Intent(getApplicationContext(),UserProfileActivity.class);
+
+                    startActivity(intent);
+                    finish();
+                    overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+
                     progressDialog.dismiss();
                 }
 
@@ -226,7 +204,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        stopUserAccountService();
+        unbindUserAccountService(viewModel);
     }
 
     public void login() {
@@ -273,13 +251,14 @@ public class LoginActivity extends BaseActivity {
 
     public void onLoginSuccess() {
         loginButton.setEnabled(true);
-        //finish();
+        if(progressDialog!=null)
+            progressDialog.dismiss();
     }
 
     public void onLoginFailed() {
-        //Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
         loginButton.setEnabled(true);
+        if(progressDialog!=null)
+            progressDialog.dismiss();
     }
 
     public boolean validate() {

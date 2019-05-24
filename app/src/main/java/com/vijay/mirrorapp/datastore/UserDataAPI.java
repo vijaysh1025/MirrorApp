@@ -8,6 +8,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 
 public interface UserDataAPI {
@@ -27,6 +28,12 @@ public interface UserDataAPI {
 
 
     @GET("https://dev.refinemirror.com/api/v1/user/me/")
-    Single<Response> getUserData(@Header("AuthResponse") String authToken);
+    Single<Response> getUserData(@Header("Authorization") String authToken);
 
+    @PATCH("https://dev.refinemirror.com/api/v1/user/me/")
+    @FormUrlEncoded
+    Single<Response> updateUserData(@Header("Authorization") String authToken,
+                                    @Field("name") String name,
+                                    @Field("birthdate") String birthdate,
+                                    @Field("location") String location);
 }
