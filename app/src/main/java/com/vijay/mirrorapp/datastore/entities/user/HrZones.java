@@ -1,7 +1,4 @@
-package com.vijay.mirrorapp.entities.user;
-
-
-import com.google.gson.annotations.SerializedName;
+package com.vijay.mirrorapp.datastore.entities.user;
 
 
 public class HrZones{

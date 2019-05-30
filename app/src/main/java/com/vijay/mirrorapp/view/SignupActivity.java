@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.vijay.mirrorapp.R;
 import com.vijay.mirrorapp.core.platform.BaseActivity;
-import com.vijay.mirrorapp.entities.user.AuthResponse;
+import com.vijay.mirrorapp.datastore.entities.user.AuthResponse;
 import com.vijay.mirrorapp.viewmodel.UserAccountViewModel;
 
 import javax.inject.Inject;
@@ -25,6 +25,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+/*
+Activity to allow user to sign up for an account
+ */
 public class SignupActivity extends BaseActivity {
     private static final String TAG = "SignupActivity";
 

@@ -1,4 +1,4 @@
-package com.vijay.mirrorapp.entities.user;
+package com.vijay.mirrorapp.datastore.entities.user;
 
 import java.util.List;
 

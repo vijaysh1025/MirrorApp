@@ -1,4 +1,4 @@
-package com.vijay.mirrorapp.entities.user;
+package com.vijay.mirrorapp.datastore.entities.user;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

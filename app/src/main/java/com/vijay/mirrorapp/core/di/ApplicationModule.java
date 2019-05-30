@@ -1,27 +1,26 @@
 package com.vijay.mirrorapp.core.di;
 
+import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.vijay.mirrorapp.MirrorApplication;
-import com.vijay.mirrorapp.datastore.UserDataService;
+import com.vijay.mirrorapp.datastore.api.UserDataService;
+import com.vijay.mirrorapp.datastore.db.UserDao;
+import com.vijay.mirrorapp.datastore.db.UserDataBase;
 import com.vijay.mirrorapp.viewmodel.UserAccountViewModel;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 
 import javax.inject.Singleton;
 
-import androidx.lifecycle.ReportFragment;
+import androidx.room.Room;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Interceptor;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -32,18 +31,22 @@ public class ApplicationModule {
 
     private MirrorApplication application;
 
+    // Constructor that takes in application as the context
     public ApplicationModule(MirrorApplication application){
         this.application = application;
     }
 
+    // Provide Application to DI participants that require it.
     @Provides @Singleton
-    public Context provideApplicationContext(){
+    public Application provideApplicationContext(){
         return application;
     }
 
+    // Provide UserAccountViewModel to any Activity that requires it.
     @Provides @Singleton
     public UserAccountViewModel provideUserAccountViewModel(){ return  new UserAccountViewModel();}
 
+    // Provide Retrofit instance to UserDataService class.
     @Provides @Singleton
     public Retrofit provideRetrofit(){
         Gson gson = new GsonBuilder()
@@ -57,8 +60,8 @@ public class ApplicationModule {
                 .build();
     }
 
+    // Provide client to Retrofit instance which adds additional Header information for POST requests.
     private OkHttpClient getClient(){
-
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {

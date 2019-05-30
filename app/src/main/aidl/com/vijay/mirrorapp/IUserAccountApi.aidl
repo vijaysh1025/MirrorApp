@@ -1,8 +1,8 @@
 // IUserAccountApi.aidl
 package com.vijay.mirrorapp;
 import com.vijay.mirrorapp.IUserAccountListener;
-import com.vijay.mirrorapp.entities.user.AuthResponse;
-import com.vijay.mirrorapp.entities.user.UserProfile;
+import com.vijay.mirrorapp.datastore.entities.user.AuthResponse;
+import com.vijay.mirrorapp.datastore.entities.user.UserProfile;
 
 // Declare any non-default types here with import statements
 
@@ -18,4 +18,5 @@ interface IUserAccountApi {
     UserProfile getProfile();
     void getUserProfile(String auth);
     void updateUserProfile(String auth, String name, String birthday, String location);
+    void refreshUserProfile(String email, String auth);
 }

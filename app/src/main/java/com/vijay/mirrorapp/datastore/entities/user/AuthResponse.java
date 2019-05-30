@@ -1,4 +1,4 @@
-package com.vijay.mirrorapp.entities.user;
+package com.vijay.mirrorapp.datastore.entities.user;
 
 import android.os.Parcel;
 import android.os.Parcelable;

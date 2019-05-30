@@ -13,6 +13,9 @@ import android.view.View;
 import com.vijay.mirrorapp.R;
 import com.vijay.mirrorapp.core.platform.BaseActivity;
 
+/*
+Activity to allow user to vie their profile.
+ */
 public class UserProfileActivity extends BaseActivity {
 
     @Override

@@ -1,17 +1,34 @@
-package com.vijay.mirrorapp.entities.user;
+package com.vijay.mirrorapp.datastore.entities.user;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
+@Entity(tableName = "users")
 public class UserProfile implements Parcelable, ResponseError {
 
-    public String name;
+    @PrimaryKey
+    @NonNull
+    @ColumnInfo(name = "email")
     public String email;
+
+    @ColumnInfo(name = "name")
+    public String name;
+
+    @ColumnInfo(name = "birthdate")
     public String birthdate;
+
+    @ColumnInfo(name = "location")
     public String location;
+
+    @ColumnInfo(name = "timestamp")
+    public Long timestamp;
+
     public String errorMessage;
 
     public UserProfile(){
@@ -21,6 +38,7 @@ public class UserProfile implements Parcelable, ResponseError {
         this.location="";
     }
 
+    @Ignore
     public UserProfile(String name, String email, String birthdate, String location){
         this.name = name;
         this.email = email;

@@ -22,13 +22,16 @@ import android.widget.TextView;
 
 import com.vijay.mirrorapp.R;
 import com.vijay.mirrorapp.core.platform.BaseActivity;
-import com.vijay.mirrorapp.entities.user.AuthResponse;
-import com.vijay.mirrorapp.entities.user.UserProfile;
+import com.vijay.mirrorapp.datastore.entities.user.AuthResponse;
+import com.vijay.mirrorapp.datastore.entities.user.UserProfile;
 import com.vijay.mirrorapp.services.UserAccountService;
 import com.vijay.mirrorapp.viewmodel.UserAccountViewModel;
 
 import javax.inject.Inject;
 
+/*
+Activity to allow user to Log In.
+ */
 public class LoginActivity extends BaseActivity {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
@@ -66,7 +69,6 @@ public class LoginActivity extends BaseActivity {
         startUserAcountService();
         bindUserAcountService(viewModel);
         setUpView();
-
 
         Log.i(TAG, "Activity created");
     }

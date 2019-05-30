@@ -1,11 +1,8 @@
 package com.vijay.mirrorapp.view;
 
-import androidx.appcompat.app.AppCompatActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.reactivex.Observable;
 import io.reactivex.Observer;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -18,16 +15,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.vijay.mirrorapp.R;
 import com.vijay.mirrorapp.core.platform.BaseActivity;
-import com.vijay.mirrorapp.entities.user.AuthResponse;
-import com.vijay.mirrorapp.entities.user.UserProfile;
+import com.vijay.mirrorapp.datastore.entities.user.AuthResponse;
+import com.vijay.mirrorapp.datastore.entities.user.UserProfile;
 import com.vijay.mirrorapp.viewmodel.UserAccountViewModel;
 
 import javax.inject.Inject;
 
+/*
+Activity to allow user to edit his/her profile.
+ */
 public class EditProfileActivity extends BaseActivity {
     private static final String TAG = EditProfileActivity.class.getSimpleName();
     @Inject

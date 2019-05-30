@@ -1,12 +1,15 @@
-package com.vijay.mirrorapp.datastore;
+package com.vijay.mirrorapp.datastore.api;
 
-import com.vijay.mirrorapp.entities.user.Response;
+import com.vijay.mirrorapp.datastore.entities.user.Response;
 
 import javax.inject.Inject;
 
 import io.reactivex.Single;
 import retrofit2.Retrofit;
 
+/*
+User Data Service for making calls to the API through Retrofit.
+ */
 public class UserDataService implements UserDataAPI {
 
    private UserDataAPI userDataAPI;

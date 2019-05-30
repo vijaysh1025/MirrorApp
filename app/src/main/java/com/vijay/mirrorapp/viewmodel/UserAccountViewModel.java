@@ -10,23 +10,32 @@ import android.util.Log;
 
 import com.vijay.mirrorapp.IUserAccountApi;
 import com.vijay.mirrorapp.IUserAccountListener;
-import com.vijay.mirrorapp.entities.user.AuthResponse;
-import com.vijay.mirrorapp.entities.user.UserProfile;
+import com.vijay.mirrorapp.datastore.entities.user.AuthResponse;
+import com.vijay.mirrorapp.datastore.entities.user.UserProfile;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
+/*
+Viem Model for binding Activities to User Account Services and managing state of User Data.
+ */
 public class UserAccountViewModel implements IServiceProvider{
     private static final String TAG = UserAccountViewModel.class.getSimpleName();
     @Inject
     public UserAccountViewModel(){}
 
+    // Reset Auth Response on Behavior Subject to prevent inadvertant triggering of an activity
     private AuthResponse EMPTY_AUTH_RESPONSE = new AuthResponse();
 
+    // Behavior Subject that activities can subscribe to get notifications when User Account Service has responded.
     private BehaviorSubject<AuthResponse> authResponse = BehaviorSubject.create();
+
+    // Behavior Subject that activities can subscribe to get notifications when User Account Service has responded.
     private BehaviorSubject<UserProfile> userProfile = BehaviorSubject.create();
+
+    // Behavior subject for accessing Auth Token when required
     private BehaviorSubject<String> authToken = BehaviorSubject.create();
 
     private IUserAccountApi userApi;

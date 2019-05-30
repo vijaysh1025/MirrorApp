@@ -5,6 +5,7 @@ import android.app.Application;
 import com.vijay.mirrorapp.core.di.ApplicationComponent;
 import com.vijay.mirrorapp.core.di.ApplicationModule;
 import com.vijay.mirrorapp.core.di.DaggerApplicationComponent;
+import com.vijay.mirrorapp.core.di.RoomModule;
 
 public class MirrorApplication extends Application {
     private ApplicationComponent appComponent;
@@ -14,6 +15,7 @@ public class MirrorApplication extends Application {
             appComponent = DaggerApplicationComponent
                     .builder()
                     .applicationModule(new ApplicationModule(this))
+                    .roomModule(new RoomModule(this))
                     .build();
         }
         return  appComponent;
