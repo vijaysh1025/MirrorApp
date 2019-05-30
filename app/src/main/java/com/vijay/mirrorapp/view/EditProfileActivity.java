@@ -11,6 +11,8 @@ import io.reactivex.schedulers.Schedulers;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +23,8 @@ import com.vijay.mirrorapp.core.platform.BaseActivity;
 import com.vijay.mirrorapp.datastore.entities.user.AuthResponse;
 import com.vijay.mirrorapp.datastore.entities.user.UserProfile;
 import com.vijay.mirrorapp.viewmodel.UserAccountViewModel;
+
+import java.util.Calendar;
 
 import javax.inject.Inject;
 
@@ -51,6 +55,62 @@ public class EditProfileActivity extends BaseActivity {
 
     ProgressDialog progressDialog;
 
+    TextWatcher birthDateTextWatcher = new TextWatcher() {
+        private String current = "";
+        private String ddmmyyyy = "DDMMYYYY";
+        private Calendar cal = Calendar.getInstance();
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (!s.toString().equals(current)) {
+                String clean = s.toString().replaceAll("[^\\d.]|\\.", "");
+                String cleanC = current.replaceAll("[^\\d.]|\\.", "");
+
+                int cl = clean.length();
+                int sel = cl;
+                for (int i = 2; i <= cl && i < 6; i += 2) {
+                    sel++;
+                }
+                //Fix for pressing delete next to a forward slash
+                if (clean.equals(cleanC)) sel--;
+
+                if (clean.length() < 8){
+                    clean = clean + ddmmyyyy.substring(clean.length());
+                }else{
+                    //This part makes sure that when we finish entering numbers
+                    //the date is correct, fixing it otherwise
+                    int day  = Integer.parseInt(clean.substring(0,2));
+                    int mon  = Integer.parseInt(clean.substring(2,4));
+                    int year = Integer.parseInt(clean.substring(4,8));
+
+                    mon = mon < 1 ? 1 : mon > 12 ? 12 : mon;
+                    cal.set(Calendar.MONTH, mon-1);
+                    year = (year<1900)?1900:(year>2100)?2100:year;
+                    cal.set(Calendar.YEAR, year);
+                    // ^ first set year for the line below to work correctly
+                    //with leap years - otherwise, date e.g. 29/02/2012
+                    //would be automatically corrected to 28/02/2012
+
+                    day = (day > cal.getActualMaximum(Calendar.DATE))? cal.getActualMaximum(Calendar.DATE):day;
+                    clean = String.format("%02d%02d%02d",day, mon, year);
+                }
+
+                clean = String.format("%s/%s/%s", clean.substring(0, 2),
+                        clean.substring(2, 4),
+                        clean.substring(4, 8));
+
+                sel = sel < 0 ? 0 : sel;
+                current = clean;
+                inputBirthday.setText(current);
+                inputBirthday.setSelection(sel < current.length() ? sel : current.length());
+            }
+        }
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void afterTextChanged(Editable s) {}
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +124,8 @@ public class EditProfileActivity extends BaseActivity {
                 updateProfile();
             }
         });
+
+        inputBirthday.addTextChangedListener(birthDateTextWatcher);
 
         bindUserAcountService(viewModel);
     }
@@ -107,7 +169,10 @@ public class EditProfileActivity extends BaseActivity {
         String birthday = inputBirthday.getText().toString();
         String location = inputLocation.getText().toString();
 
-        viewModel.sendUserUpdateRequest(name, birthday,location);
+        String modifiedBirthDay  = birthday.substring(6,10) + "-" + birthday.substring(3,5) + "-" + birthday.substring(0,2);
+        Log.i(TAG, modifiedBirthDay);
+
+        viewModel.sendUserUpdateRequest(name, modifiedBirthDay,location);
     }
 
     public boolean validate() {
@@ -151,6 +216,8 @@ public class EditProfileActivity extends BaseActivity {
     public void onUpdateSuccess() {
         updateButton.setEnabled(true);
         setResult(RESULT_OK, null);
+        if(progressDialog!=null)
+            progressDialog.dismiss();
         Intent intent = new Intent(getApplicationContext(), UserProfileActivity.class);
         startActivity(intent);
         finish();
@@ -171,9 +238,11 @@ public class EditProfileActivity extends BaseActivity {
 
                     @Override
                     public void onNext(UserProfile userProfile) {
+                        String modifiedBirthDay  = userProfile.birthdate.substring(8,10) + "/" + userProfile.birthdate.substring(5,7) + "/" + userProfile.birthdate.substring(0,4);
+                        Log.i(TAG, modifiedBirthDay);
                         inputName.setText(userProfile.name);
                         inputEmail.setText(userProfile.email);
-                        inputBirthday.setText(userProfile.birthdate);
+                        inputBirthday.setText(modifiedBirthDay);
                         inputLocation.setText(userProfile.location);
                     }
 
