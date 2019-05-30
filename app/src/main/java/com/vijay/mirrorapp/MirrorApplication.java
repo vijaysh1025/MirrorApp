@@ -7,6 +7,9 @@ import com.vijay.mirrorapp.core.di.ApplicationModule;
 import com.vijay.mirrorapp.core.di.DaggerApplicationComponent;
 import com.vijay.mirrorapp.core.di.RoomModule;
 
+/*
+Main Application class initializes DI Graph
+ */
 public class MirrorApplication extends Application {
     private ApplicationComponent appComponent;
 

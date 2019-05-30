@@ -38,29 +38,37 @@ public class UserAccountViewModel implements IServiceProvider{
     // Behavior subject for accessing Auth Token when required
     private BehaviorSubject<String> authToken = BehaviorSubject.create();
 
+    // Binder to communicate to User Account Service through ICP
     private IUserAccountApi userApi;
 
+    // Handler for main thread looper
     private Handler handler = new Handler(Looper.getMainLooper());
 
+    // Get authresponses that are not empty
     public Observable<AuthResponse> getAuthResponse(){
         return authResponse
                 .filter(it->it!=EMPTY_AUTH_RESPONSE);
     }
 
+    // Get User Profile Observable
     public BehaviorSubject<UserProfile> getUserProfile(){
         return userProfile;
     }
 
+    // Get Auth Token Observable
     public BehaviorSubject<String> getAuthToken() { return authToken; }
 
+    // Set authresponse to empty
     public void setEmptyAuthResponse(){
         authResponse.onNext(EMPTY_AUTH_RESPONSE);
     }
 
+    // Set Auth Token -> Used after logging in
     public void setAuthToken(String authToken){
         this.authToken.onNext(authToken);
     }
 
+    // Send Login Request to User Account Service
     public void sendLoginRequest(String email, String password){
         try{
             userApi.login(email,password);
@@ -69,6 +77,7 @@ public class UserAccountViewModel implements IServiceProvider{
         }
     }
 
+    // Send Sign Up Request to User Account Service
     public void sendSignupRequest(String name, String email, String password, String password2){
         try{
             userApi.signUp(name, password, password2, email);
@@ -77,6 +86,7 @@ public class UserAccountViewModel implements IServiceProvider{
         }
     }
 
+    // Send User Profile Request to User Account Service
     public void sendUserProfileRequest(String auth){
         try{
             userApi.getUserProfile(auth);
@@ -85,6 +95,7 @@ public class UserAccountViewModel implements IServiceProvider{
         }
     }
 
+    // Set Update Profile Request to User Account Service.
     public void sendUserUpdateRequest(String name, String birthday, String location){
         try{
             userApi.updateUserProfile(authToken.getValue(), name, birthday, location);
@@ -115,11 +126,13 @@ public class UserAccountViewModel implements IServiceProvider{
     };
 
     /*
+    Implementation for IUserAccountListener.aidl that responds to Service Requests
     Create a listener to listen to IPC user account service and pass value to
     SubjectBehavior.
      */
     private IUserAccountListener userAccountListener = new IUserAccountListener.Stub()
     {
+        // Handle Response from User Account Service that returns Auth Token
         @Override
         public void handleResponse() throws RemoteException {
             handler.post(new Runnable() {
@@ -135,6 +148,7 @@ public class UserAccountViewModel implements IServiceProvider{
             });
         }
 
+        // Handler Response from User Account Service that returns User Profile
         @Override
         public void handleUserProfile() throws RemoteException {
             handler.post(new Runnable() {
