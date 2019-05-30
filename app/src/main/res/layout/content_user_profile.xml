@@ -27,7 +27,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="16dp"
                     android:layout_marginRight="16dp"
-                    android:src="@drawable/baseline-calendar_today-24px" />
+                    android:src="@drawable/ic_phone_black" />
 
                 <TextView
                     android:id="@+id/birthday_text"
