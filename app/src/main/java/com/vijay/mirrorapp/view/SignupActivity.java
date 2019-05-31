@@ -109,6 +109,7 @@ public class SignupActivity extends BaseActivity {
     public void onSignupSuccess() {
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
+        viewModel.setEmptyAuthResponse();
         Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
         startActivity(intent);
         finish();

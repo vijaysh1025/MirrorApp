@@ -21,6 +21,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.vijay.mirrorapp.R;
@@ -47,9 +48,14 @@ public class UserProfileActivity extends BaseActivity {
     @BindView(R.id.location_text)
     TextView locationText;
 
+    @BindView(R.id.btn_refresh)
+    Button refreshButton;
+
     CompositeDisposable compositeDisposable;
 
     private Unbinder unbinder;
+
+    Bundle extras;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +72,12 @@ public class UserProfileActivity extends BaseActivity {
 
         bindUserAcountService(viewModel);
 
+        extras = getIntent().getExtras();
+        if(extras != null && extras.containsKey("Reload_Profile") && extras.getBoolean("Reload_Profile"))
+        {
+            viewModel.sendUserProfileRequest(viewModel.getAuthToken().getValue());
+        }
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +88,14 @@ public class UserProfileActivity extends BaseActivity {
                 overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
+
+        refreshButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
 
         setTitle("Test Two");
     }

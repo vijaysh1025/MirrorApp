@@ -104,6 +104,15 @@ public class UserAccountViewModel implements IServiceProvider{
         }
     }
 
+    // Set Update Profile Request to User Account Service.
+    public void sendProfileRefreshRequest(){
+        try{
+            userApi.refreshUserProfile(userProfile.getValue().email, authToken.getValue());
+        }catch (Throwable t){
+            Log.e(TAG, t.getMessage(),t);
+        }
+    }
+
     /*
     Create connection for IPC account service.
      */

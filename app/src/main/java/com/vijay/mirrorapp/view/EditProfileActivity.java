@@ -190,15 +190,15 @@ public class EditProfileActivity extends BaseActivity {
             inputEmail.setError(null);
         }
 
-        if (birthday.isEmpty()) {
-            inputBirthday.setError("cannot be empty");
+        if (birthday.isEmpty() || !birthday.matches("\\d\\d/\\d\\d/\\d\\d\\d\\d")) {
+            inputBirthday.setError("enter full birthday");
             valid = false;
         } else {
             inputBirthday.setError(null);
         }
 
         if (location.isEmpty()) {
-            inputLocation.setError("cannot be empty");
+            inputLocation.setError("enter address");
             valid = false;
         } else {
             inputLocation.setError(null);
@@ -219,6 +219,7 @@ public class EditProfileActivity extends BaseActivity {
         if(progressDialog!=null)
             progressDialog.dismiss();
         Intent intent = new Intent(getApplicationContext(), UserProfileActivity.class);
+        intent.putExtra("Reload_Profile", true);
         startActivity(intent);
         finish();
         overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
@@ -238,11 +239,13 @@ public class EditProfileActivity extends BaseActivity {
 
                     @Override
                     public void onNext(UserProfile userProfile) {
-                        String modifiedBirthDay  = userProfile.birthdate.substring(8,10) + "/" + userProfile.birthdate.substring(5,7) + "/" + userProfile.birthdate.substring(0,4);
-                        Log.i(TAG, modifiedBirthDay);
+                        if(userProfile.birthdate != null && userProfile.birthdate.length() > 0) {
+                            String modifiedBirthDay = userProfile.birthdate.substring(8, 10) + "/" + userProfile.birthdate.substring(5, 7) + "/" + userProfile.birthdate.substring(0, 4);
+                            inputBirthday.setText(modifiedBirthDay);
+                        }
+
                         inputName.setText(userProfile.name);
                         inputEmail.setText(userProfile.email);
-                        inputBirthday.setText(modifiedBirthDay);
                         inputLocation.setText(userProfile.location);
                     }
 

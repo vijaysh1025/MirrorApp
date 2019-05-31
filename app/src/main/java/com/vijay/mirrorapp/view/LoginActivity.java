@@ -131,10 +131,11 @@ public class LoginActivity extends BaseActivity {
                         showErrorMessage(authResponse.errorMessage);
                         return;
                     }
-                    onLoginSuccess();
                     viewModel.sendUserProfileRequest(authResponse.authToken);
                     viewModel.setAuthToken(authResponse.authToken);
                     viewModel.setEmptyAuthResponse();
+                    onLoginSuccess();
+
                 }
 
                 @Override

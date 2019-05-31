@@ -25,6 +25,7 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
+import androidx.room.EmptyResultSetException;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
@@ -263,7 +264,7 @@ public class UserAccountService extends BaseService {
                                     break;
                                 case BETWEEN_SOFT_HARD:
                                     notifyListeners(userProfile);
-                                    userDataRepository.storeUserInDb(userProfile);
+                                    getUserProfile(auth);
                                     break;
                                 case GREATER_THAN_HARD:
                                     getUserProfile(auth);
@@ -273,6 +274,9 @@ public class UserAccountService extends BaseService {
 
                         @Override
                         public void onError(Throwable e) {
+                            Log.e(TAG, e.getMessage(), e);
+                            if(e instanceof EmptyResultSetException)
+                                getUserProfile(auth);
                             dispose();
                         }
                     });
